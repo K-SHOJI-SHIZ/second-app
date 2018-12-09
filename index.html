@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- 色変更に使うライブラリで用意されているCSSを導入 https://github.com/bebraw/colorjoe -->
+  <link rel="stylesheet" href="css/colorjoe.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <title>忘年会☆ゲーム</title>
+</head>
+<body>
+  <div style="background: url(img/gackground.jpg)">
+    <div style="width: 750px; height:1334px; background-color: #fff; margin: 0 auto; padding: 0 1em;">
+      <div id="menu" style="display: flex;">
+        <div>忘年会☆ゲーム</div>
+        <div
+            id="draw-menu"
+            style="text-align: center; font-size: medium;"
+        >
+          <button id="draw-button">お絵描き</button>
+        </div>
+        <div
+            id="question-menu"
+            style="text-align: center; font-size: medium;"
+        >
+          <button id="question-button">問題</button>
+        </div>
+        <div
+            id="result-menu"
+            style="text-align: center; font-size: medium;"
+        >
+          <button id="result-button">解答</button>
+        </div>
+        <div
+            id="logout-screen"
+            style="text-align: right; font-size: medium; display: none;"
+        >
+          <button id="logout-button">ログアウト</button>
+        </div>
+      </div>
+      <div style="flex: 1 1; position: relative; overflow:hidden;">
+        <!-- ログイン画面 -->
+        <div
+          id="start-screen"
+          style="width:100%; height:100%; display: flex; align-items: center; position:absolute; z-index:10;background-color:rgba(128,128,128,0.5);"
+        >
+          <div style="text-align: center; width: 100%; font-size: xx-large;">
+              <input type="text" name="nickname" id="nickname" placeholder="Your nickname" autofocus><br/><br/>
+              <button style="font-size: xx-large;" id="start-button">Start</button>
+          </div>
+        </div>
+        <!-- -->
+        <!-- お絵描き画面 -->
+        <div id="draw-screen">
+          <h1>お絵描き</h1>
+          <div>
+              <canvas
+                id="draw-area"
+                width="400px"
+                height="400px"
+                style="border: 1px solid #000000;"></canvas>
+              <!-- 色を選択できるカラーパレットを用意する。 -->
+              <span id="color-palette"></span>
+          </div>
+          <div>
+              <button id="clear-button">全消し</button>
+          </div>
+          <div>
+              <button id="eraser-button">消しゴムモード</button>
+          </div>
+        </div>
+        <!-- -->
+        <!-- 問題画面 -->
+        <div
+          id="question-screen"
+          style="display: none;"
+        >
+          <div id='question-title'>
+            <h1>問題</h1>
+          </div>
+          <div id='question-body' style="border: 1px solid #000000;">
+            ここに問題ですよ
+          </div>
+          <div>
+            <div>
+              <form id="answer">
+                <input type="radio" name="ans" value="0" checked>
+                  うん、あってるよ
+                </input>
+                <input type="radio" name="ans" value="1">
+                  それは違うよ！
+                </input>
+              </form>
+            </div>
+            <button id="answer-button">
+              ファイナルアンサー？
+            </button>
+          </div>
+        </div>
+        <!-- -->
+        <!-- 解答画面 -->
+        <div
+          id="result-screen"
+          style="display: none;"
+        >
+          <div id="correctOrNotCorrect"
+          >
+            <img
+              id="correct-img"
+              src="/img/answer_yes.png"
+              alt="correct"
+              style="display: none;"
+            >
+            <img
+              id="notcorrect-img"
+              src="/img/answer_no.png"
+              alt="notcorrect"
+              style="display: none;"
+            >
+          </div>
+          <h1>解答</h1>
+          <div>
+            <button id="nextQuestion-button">
+              次の問題へ
+            </button>
+            <button id="ranking-button" style="display:none">
+              結果発表
+            </button>
+          </div>
+        </div>
+        <!-- -->
+        <!-- ランキング画面 -->
+        <div
+          id="ranking-screen"
+          style="display: none;"
+        >
+          <h1>スコアランキング</h1>
+          <div>
+            <button id="ranking-reload-button">
+              ランキング更新
+            </button>
+          </div>
+        </div>
+        <!-- -->
+      </div>
+    </div>
+  </div>
+  <!-- 色変更に使うライブラリを導入 https://github.com/bebraw/colorjoe -->
+  <script src="./js/colorjoe.min.js"></script>
+  <script src="./js/main.js"></script>
+</body>
+</html>

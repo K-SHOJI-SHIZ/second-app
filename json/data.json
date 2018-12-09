@@ -1,0 +1,51 @@
+[
+  {
+    "number": 1,
+    "question": "これが問題1だよ",
+    "choices": [
+      {
+        "label":"うん、そうだね",
+        "value":0
+      },
+      {
+        "label":"それは違うよ！",
+        "value":1
+      }
+    ],
+    "answer": 0
+  },
+  {
+    "number": 2,
+    "question": "最強のポケモンはガブリアス？",
+    "choices": [
+      {
+        "label":"はい、そうです",
+        "value":0
+      },
+      {
+        "label":"フライゴンのほうがｶﾜ(・∀・)ｲｲ!!",
+        "value":1
+      },
+      {
+        "label":"ボブリアスはありえないですなwww",
+        "value":2
+      }
+    ],
+    "answer": 1
+  },
+  {
+    "number": 3,
+    "question": "これが問題3だよ",
+    "choices": [
+      {
+        "label":"うん、そうだね",
+        "value":0
+      },
+      {
+        "label":"それは違うよ！",
+        "value":1
+      }
+    ],
+    "answer": 0
+  }
+]
