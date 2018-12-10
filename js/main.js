@@ -107,6 +107,21 @@ window.addEventListener('load', () => {
   const context = canvas.getContext('2d');
   const lastPosition = { x: null, y: null };
   let isDrag = false;
+  
+  function scrollX(){
+        return document.documentElement.scrollLeft || document.body.scrollLeft;
+  }
+  function scrollY(){
+        return document.documentElement.scrollTop || document.body.scrollTop;
+  }
+  function getPositionX (event) {
+        const position = event.touches[0].clientX - $(canvas).position().left + scrollX() - parseInt($('#body').css('margin-left'), 10);
+        return position;
+  }
+  function getPositionY (event) {
+        const position = event.touches[0].clientY - $(canvas).position().top + scrollY();
+        return position;
+  }
 
   // 現在の線の色を保持する変数(デフォルトは黒(#000000)とする)
   let currentColor = '#000000';
@@ -115,27 +130,26 @@ window.addEventListener('load', () => {
     if(!isDrag) {
       return;
     }
-    context.lineCap = 'round';
-    context.lineJoin = 'round';
-    context.lineWidth = 5;
-    context.strokeStyle = currentColor;
+    // context.lineCap = 'round';
+    // context.lineJoin = 'round';
+    // context.lineWidth = 5;
+    //context.strokeStyle = currentColor;
     let lastPositionX = lastPosition.x;
     let lastPositionY = lastPosition.y;
     if (lastPosition.x === null || lastPosition.y === null) {
-      context.moveTo(x, y);
       lastPositionX = x;
       lastPositionY = y;
-    } else {
-      context.moveTo(lastPosition.x, lastPosition.y);
     }
-    context.lineTo(x, y);
-    context.stroke();
+    // context.moveTo(lastPositionX, lastPositionY);
+    // context.lineTo(x, y);
+    // context.stroke();
     const drawData = {
         act: 'move',
         x: x,
         y: y,
-        lastPositionX: x,
-        lastPositionY: y
+        lastPositionX: lastPositionX,
+        lastPositionY: lastPositionY,
+        color: currentColor,
     };
     socket.emit('draw', drawData);
     lastPosition.x = x;
@@ -147,28 +161,33 @@ window.addEventListener('load', () => {
   }
 
   function dragStart(event) {
-    context.beginPath();
-    const drawData = {
-        act: 'start',
-    };
-    socket.emit('draw', drawData);
+    // context.beginPath();
+    // const drawData = {
+    //     act: 'start',
+    // };
+    // socket.emit('draw', drawData);
     isDrag = true;
   }
 
   function dragEnd(event) {
-    context.closePath();
+    // context.closePath();
     isDrag = false;
-    const drawData = {
-        act: 'end',
-    };
-    socket.emit('draw', drawData);
+    // const drawData = {
+    //     act: 'end',
+    // };
+    // socket.emit('draw', drawData);
     lastPosition.x = null;
     lastPosition.y = null;
   }
 
   function initEventHandler() {
     const clearButton = document.querySelector('#clear-button');
-    clearButton.addEventListener('click', clear);
+    clearButton.addEventListener('click', ()=>{
+      const drawData = {
+        act: 'clear',
+      };
+      socket.emit('draw', drawData);
+    });
 
     const eraserButton = document.querySelector('#eraser-button');
     eraserButton.addEventListener('click', () => {
@@ -184,20 +203,27 @@ window.addEventListener('load', () => {
     canvas.addEventListener('touchstart', dragStart);
     canvas.addEventListener('touchend', dragEnd);
     canvas.addEventListener('touchmove', (event) => {
-        event.preventDefault();
-      draw(event.changedTouches[0].clientX, event.changedTouches[0].clientY);
+      event.preventDefault();
+      console.log(getPositionX(event));
+      console.log(getPositionY(event));
+      draw(getPositionX(event), getPositionY(event));
     });
   }
   socket.on('message', function(data) {
       switch (data.act) {
           case "move":
+              context.beginPath();
               context.lineCap = 'round';
               context.lineJoin = 'round';
               context.lineWidth = 5;
-              context.strokeStyle = currentColor;
+              context.strokeStyle = data.color;
               context.moveTo(data.lastPositionX, data.lastPositionY);
               context.lineTo(data.x, data.y);
               context.stroke();
+              context.closePath();
+              break;
+          case "clear":
+              clear();
       }
   });
 
