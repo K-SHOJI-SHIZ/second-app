@@ -48,9 +48,8 @@ io.on('connection', function(socket) {
         socket.emit('nextQuestion', player);
     });
     socket.on('draw', function(data) {
-        if (data.act === 'move') {
-            io.sockets.emit("message", data);
-        }
+        io.sockets.emit("message", data);
+        //socket.broadcast.emit("message", data);
     });
     socket.on('logout', () => {
         delete players[player.id];
