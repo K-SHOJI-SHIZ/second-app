@@ -28,6 +28,7 @@ function drawOpen(){
     $("#draw-screen").show();
     $("#question-screen").hide();
     $("#result-screen").hide();
+    $("#ranking-screen").hide();
 }
 $("#draw-button").on('click', drawOpen);
 
@@ -35,18 +36,20 @@ function questionOpen(){
     $("#draw-screen").hide();
     $("#question-screen").show();
     $("#result-screen").hide();
+    $("#ranking-screen").hide();
 }
 $("#question-button").on('click', () => {
-  socket.emit('requestStatus');
+  socket.emit('requestStatus', 'question');
 });
 $("#nextQuestion-button").on('click', () => {
-  socket.emit('requestStatus');
+  socket.emit('requestStatus', 'question');
 });
 
 function resultOpen(){
     $("#draw-screen").hide();
     $("#question-screen").hide();
     $("#result-screen").show();
+    $("#ranking-screen").hide();
 }
 $("#result-button").on('click', resultOpen);
 $("#answer-button").on('click', ()=> {
@@ -67,19 +70,32 @@ $("#answer-button").on('click', ()=> {
   socket.emit('statusUpdate', isCorrect);
 });
 
+function rankingOpen(){
+    $("#draw-screen").hide();
+    $("#question-screen").hide();
+    $("#result-screen").hide();
+    $("#ranking-screen").show();
+}
+$("#ranking-button").on('click', () => {
+  rankingOpen();
+});
+
 socket.on('receiveStatus', (data) => {
-  const targetQuestion = questionData[data.nextQuestionNo-1];
-  const title = document.getElementById('question-title');
-  title.innerHTML = `<h1>問題${data.nextQuestionNo}</h1>`;
-  const body = document.getElementById('question-body');
-  body.innerHTML = targetQuestion.question;
-  const form = document.getElementById('answer');
-  let choices='';
-  targetQuestion.choices.forEach((val, index)=>{
-    choices = choices + `${index === 0 ? '': '<br/>'}` + `<input type="radio" name="ans" value=${val.value} ${index === 0 ? 'checked': ''}>${val.label}</input>`
-  });
-  form.innerHTML = choices;
-  questionOpen();
+  switch (data.mode) {
+    case "question":
+      const targetQuestion = questionData[data.player.nextQuestionNo-1];
+      const title = document.getElementById('question-title');
+      title.innerHTML = `<h1>問題${data.player.nextQuestionNo}</h1>`;
+      const body = document.getElementById('question-body');
+      body.innerHTML = targetQuestion.question;
+      const form = document.getElementById('answer');
+      let choices='';
+      targetQuestion.choices.forEach((val, index)=>{
+        choices = choices + `${index === 0 ? '': '<br/>'}` + `<input type="radio" name="ans" value=${val.value} ${index === 0 ? 'checked': ''}>${val.label}</input>`
+      });
+      form.innerHTML = choices;
+      questionOpen();
+    }
 });
 
 socket.on('nextQuestion', (data) => {
