@@ -92,9 +92,11 @@
                   それは違うよ！
               </form>
             </div>
-            <button id="answer-button">
-              ファイナルアンサー？
-            </button>
+            <p align="right">
+              <button id="answer-button">
+                ファイナルアンサー？
+              </button>
+            </p>
           </div>
         </div>
         <!-- -->
@@ -137,11 +139,28 @@
           id="ranking-screen"
           style="display: none;"
         >
-          <h1>スコアランキング</h1>
+          <h1>成績</h1>
           <div>
-            <div id="score">あなたは〇問中×門正解</div>
-            <div id="ranking">ここにランキングを出します</div>
-            <button id="ranking-reload-button">
+            <div id="your-score">あなたは〇問中×問正解</div>
+            <hr/>
+            <h2>ランキング</h2>
+            <div id="ranking">
+              <table id="ranking-table" style="margin:auto">
+                <tr>
+                  <td><img style="height:16px" src="img/crown-gold.png"></td>
+                  <td>1位</td>
+                  <td>ランドロス</td>
+                  <td>90/100問正解</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>2位</td>
+                  <td>ガブリアス</td>
+                  <td>80/100問正解</td>
+                </tr>
+            </table>
+            </div>
+            <button id="ranking-reload-button" style="margin-top:10px">
               ランキング更新
             </button>
           </div>
