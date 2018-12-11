@@ -13,6 +13,7 @@ const FIELD_WIDTH = 1000, FIELD_HEIGHT = 1000;
 
 class Player {
     constructor(obj={}){
+        this.id = obj.id;
         this.socketId = obj.socketId;
         this.nickname = obj.nickname;
         this.nextQuestionNo = obj.nextQuestionNo;
@@ -27,27 +28,36 @@ class Player {
 io.on('connection', function(socket) {
     let player = null;
     socket.on('game-start', (config) => {
+        const id = players.length;
         player = new Player({
+            id: id,
             socketId: socket.id,
             nickname: config.nickname,
             nextQuestionNo: 1,
             score: 0,
         });
-        console.log(player.nextQuestionNo);
-        players[player.id] = player;
+        players.push(player);
     });
     socket.on('requestStatus', (mode) => {
       const data = {
         mode: mode,
         player: player,
+        ranking: []
       };
       switch (mode) {
           case "question":
-              socket.emit('receiveStatus', data);
               break;
           case "ranking":
+              let sortedPlayers = [];
+              sortedPlayers = players.concat();
+              sortedPlayers.sort((a,b)=>{
+                if (a.score < b.score) return 1;
+                else return -1;
+              });
+              data.ranking = sortedPlayers;
               break;
       }
+      socket.emit('receiveStatus', data);
     });
     socket.on('statusUpdate', (isCorrect) => {
         player.nextQuestionNo = player.nextQuestionNo + 1;

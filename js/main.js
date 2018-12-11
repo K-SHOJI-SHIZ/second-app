@@ -77,30 +77,78 @@ function rankingOpen(){
     $("#ranking-screen").show();
 }
 $("#ranking-button").on('click', () => {
-  rankingOpen();
+  socket.emit('requestStatus', 'ranking');
+});
+$("#ranking-reload-button").on('click', () => {
+  socket.emit('requestStatus', 'ranking');
 });
 
 socket.on('receiveStatus', (data) => {
-  switch (data.mode) {
-    case "question":
-      const targetQuestion = questionData[data.player.nextQuestionNo-1];
-      const title = document.getElementById('question-title');
-      title.innerHTML = `<h1>問題${data.player.nextQuestionNo}</h1>`;
-      const body = document.getElementById('question-body');
-      body.innerHTML = targetQuestion.question;
-      const form = document.getElementById('answer');
-      let choices='';
-      targetQuestion.choices.forEach((val, index)=>{
-        choices = choices + `${index === 0 ? '': '<br/>'}` + `<input type="radio" name="ans" value=${val.value} ${index === 0 ? 'checked': ''}>${val.label}</input>`
-      });
-      form.innerHTML = choices;
-      questionOpen();
+    switch (data.mode) {
+      case "question":
+        const targetQuestion = questionData[data.player.nextQuestionNo-1];
+        const title = document.getElementById('question-title');
+        title.innerHTML = `<h1>問題${data.player.nextQuestionNo}</h1>`;
+        const body = document.getElementById('question-body');
+        body.innerHTML = targetQuestion.question;
+        const form = document.getElementById('answer');
+        let choices='';
+        targetQuestion.choices.forEach((val, index)=>{
+          choices = choices + `${index === 0 ? '': '<br/>'}` + `<input type="radio" name="ans" value=${val.value} ${index === 0 ? 'checked': ''}>${val.label}</input>`
+        });
+        form.innerHTML = choices;
+        questionOpen();
+        break;
+      case "ranking":
+        const yourscore = document.getElementById('your-score');
+        yourscore.innerHTML = `${data.player.nickname}さんの成績: 全${questionData.length}問中${data.player.score}問正解！`;
+        const table = document.getElementById('ranking-table');
+        while (table.rows.length > 0) table.deleteRow(0);
+        const iterationMax = 5;
+        data.ranking.forEach((val, index)=>{
+          if (index < iterationMax) {
+            const row = table.insertRow(-1);
+            const cell1 = row.insertCell(-1);
+            const cell2 = row.insertCell(-1);
+            const cell3 = row.insertCell(-1);
+            const cell4 = row.insertCell(-1);
+            let img = "";
+            if (index < 3) {
+              img = document.createElement("img");
+              img.height = 16;
+              switch (index) {
+                case 0:
+                  img.src = "img/crown-gold.png";
+                  break;
+                case 1:
+                  img.src = "img/crown-silver.png";
+                  break;
+                case 2:
+                  img.src = "img/crown-bronze.png";
+                  break;
+                default:
+              }
+              cell1.appendChild(img);
+            }
+            cell2.innerHTML = `${index+1}位`;
+            cell3.innerHTML = `${val.nickname}さん`;
+            cell4.innerHTML = `${val.score}\/${val.nextQuestionNo-1}問正解`;
+          }
+        });
+        rankingOpen();
     }
 });
 
 socket.on('nextQuestion', (data) => {
   currentQuestionNo = data.nextQuestionNo;
   console.log(`次の問題は${currentQuestionNo}です`);
+  if (data.nextQuestionNo > questionData.length) {
+    $("#nextQuestion-button").hide();
+    $("#ranking-button").show();
+  } else {
+    $("#nextQuestion-button").show();
+    $("#ranking-button").hide();
+  }
   resultOpen();
 });
 
@@ -123,7 +171,7 @@ window.addEventListener('load', () => {
   const context = canvas.getContext('2d');
   const lastPosition = { x: null, y: null };
   let isDrag = false;
-  
+
   function scrollX(){
         return document.documentElement.scrollLeft || document.body.scrollLeft;
   }
