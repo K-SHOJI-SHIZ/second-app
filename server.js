@@ -36,8 +36,18 @@ io.on('connection', function(socket) {
         console.log(player.nextQuestionNo);
         players[player.id] = player;
     });
-    socket.on('requestStatus', () => {
-      socket.emit('receiveStatus', player);
+    socket.on('requestStatus', (mode) => {
+      const data = {
+        mode: mode,
+        player: player,
+      };
+      switch (mode) {
+          case "question":
+              socket.emit('receiveStatus', data);
+              break;
+          case "ranking":
+              break;
+      }
     });
     socket.on('statusUpdate', (isCorrect) => {
         player.nextQuestionNo = player.nextQuestionNo + 1;
