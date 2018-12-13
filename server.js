@@ -8,8 +8,7 @@ const app = express();
 const server = http.Server(app);
 const io = socketIO(server);
 let players = [];
-
-const FIELD_WIDTH = 1000, FIELD_HEIGHT = 1000;
+let drawData = [];
 
 class Player {
     constructor(obj={}){
@@ -18,10 +17,10 @@ class Player {
         this.nickname = obj.nickname;
         this.nextQuestionNo = obj.nextQuestionNo;
         this.score = obj.score;
+        this.isWriter = false;
     }
     remove(){
         delete players[this.id];
-        io.to(this.socketId).emit('dead');
     }
 }
 
@@ -38,38 +37,15 @@ io.on('connection', function(socket) {
         });
         players.push(player);
     });
-    socket.on('requestStatus', (mode) => {
-      const data = {
-        mode: mode,
-        player: player,
-        ranking: []
-      };
-      switch (mode) {
-          case "question":
-              break;
-          case "ranking":
-              let sortedPlayers = [];
-              sortedPlayers = players.concat();
-              sortedPlayers.sort((a,b)=>{
-                if (a.score < b.score) return 1;
-                else return -1;
-              });
-              data.ranking = sortedPlayers;
-              break;
-      }
-      socket.emit('receiveStatus', data);
-    });
-    socket.on('statusUpdate', (isCorrect) => {
-        player.nextQuestionNo = player.nextQuestionNo + 1;
-        if (isCorrect) {
-          player.score = player.score + 1;
-        }
-        console.log(player.nextQuestionNo);
-        socket.emit('nextQuestion', player);
-    });
     socket.on('draw', function(data) {
-        io.sockets.emit("message", data);
-        //socket.broadcast.emit("message", data);
+      drawData.push(data);
+      if(data.act == "clear") {
+        drawData=[];
+      }
+      io.sockets.emit("receiveDrawData", data);
+    });
+    socket.on('requestCurrentCanvas', ()=>{
+      socket.emit("receiveCurrentCanvas", drawData);
     });
     socket.on('logout', () => {
         delete players[player.id];
