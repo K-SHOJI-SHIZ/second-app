@@ -12,31 +12,14 @@
 </head>
 <body>
   <div style="background: url(img/gackground.jpg)">
-    <div id= "body" style="width: 375px; height:650px; background-color: #fff; margin: 0 auto; padding: 0 1em;">
+    <div id= "body" style="width: flex; height:flex; background-color: #fff; margin: 0 auto; padding: 0 1em;">
       <div id="menu" style="display: flex;">
         <div>忘年会☆ゲーム</div>
-        <div
-            id="draw-menu"
-            style="text-align: center; font-size: medium;"
-        >
-          <button id="draw-button">お絵描き</button>
-        </div>
-        <div
-            id="question-menu"
-            style="text-align: center; font-size: medium;"
-        >
-          <button id="question-button">問題</button>
-        </div>
-        <div
-            id="result-menu"
-            style="text-align: center; font-size: medium;"
-        >
-          <button id="result-button">解答</button>
-        </div>
         <div
             id="logout-screen"
             style="text-align: right; font-size: medium; display: none;"
         >
+          <button id="quit-button">メニュー</button>
           <button id="logout-button">ログアウト</button>
         </div>
       </div>
@@ -52,8 +35,30 @@
           </div>
         </div>
         <!-- -->
+        <div id="main-screen">
+          <h1>メインメニュー</h1>
+          <div id="respondent-menu">
+            <h2>解答者メニュー</h2>
+            <div>
+              <button style="font-size: xx-large;" id="join-button">参加する</button>
+            </div>
+            <hr/>
+          </div>
+          <div id="painter-menu">
+          <h2>描き手メニュー</h2>
+            <div>
+              <div><button style="font-size: xx-large;" id="draw-alone-button">一人で描く</button></div>
+              <div><button style="font-size: xx-large;" id="draw-relay-button">リレー形式で描く</button></div>
+              <div><button style="font-size: xx-large;" id="draw-gether-button">みんなで描く</button></div>
+            </div>
+          </div>
+          <div id="error-message" style="color:#ff0000; display:none;">
+            <p>ゲーム終了までお待ちください</p>
+          </div>
+        </div>
+        <!-- -->
         <!-- お絵描き画面 -->
-        <div id="draw-screen">
+        <div id="draw-screen" style="display:none">
           <h1>お絵描き</h1>
           <div>
               <canvas
@@ -61,108 +66,16 @@
                 width="360px"
                 height="360px"
                 style="border: 1px solid #000000;"></canvas>
+          </div>
+          <div id="pallet">
               <!-- 色を選択できるカラーパレットを用意する。 -->
-              <span id="color-palette"></span>
-          </div>
-          <div>
-              <button id="clear-button">全消し</button>
-          </div>
-          <div>
-              <button id="eraser-button">消しゴムモード</button>
-          </div>
-        </div>
-        <!-- -->
-        <!-- 問題画面 -->
-        <div
-          id="question-screen"
-          style="display: none;"
-        >
-          <div id='question-title'>
-            <h1>問題</h1>
-          </div>
-          <div id='question-body' style="border: 1px solid #000000;">
-            ここに問題ですよ
-          </div>
-          <div>
+            <span id="color-palette"></span>
             <div>
-              <form id="answer">
-                <input type="radio" name="ans" value="0" checked>
-                  うん、あってるよ
-                <input type="radio" name="ans" value="1">
-                  それは違うよ！
-              </form>
+                <button id="clear-button">全消し</button>
             </div>
-            <p align="right">
-              <button id="answer-button">
-                ファイナルアンサー？
-              </button>
-            </p>
-          </div>
-        </div>
-        <!-- -->
-        <!-- 解答画面 -->
-        <div
-          id="result-screen"
-          style="display: none;"
-        >
-          <div id="correctOrNotCorrect">
-            <div id="correct-img" style="display: none;">
-              <h1>正解！</h1>
-              <img
-                src="/img/answer_yes.png"
-                alt="correct"
-                style="width: 100%;"
-              >
+            <div>
+                <button id="eraser-button">消しゴムモード</button>
             </div>
-            <div id="notcorrect-img" style="display: none;">
-              <h1>ざんねん……</h1>
-              <img
-                src="/img/answer_no.png"
-                alt="notcorrect"
-                style="width: 100%;"
-              >
-            </div>
-          </div>
-          <h1>解答</h1>
-          <div>
-            <button id="nextQuestion-button">
-              次の問題へ
-            </button>
-            <button id="ranking-button">
-              結果発表
-            </button>
-          </div>
-        </div>
-        <!-- -->
-        <!-- ランキング画面 -->
-        <div
-          id="ranking-screen"
-          style="display: none;"
-        >
-          <h1>成績</h1>
-          <div>
-            <div id="your-score">あなたは〇問中×問正解</div>
-            <hr/>
-            <h2>ランキング</h2>
-            <div id="ranking">
-              <table id="ranking-table" style="margin:auto">
-                <tr>
-                  <td><img style="height:16px" src="img/crown-gold.png"></td>
-                  <td>1位</td>
-                  <td>ランドロス</td>
-                  <td>90/100問正解</td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td>2位</td>
-                  <td>ガブリアス</td>
-                  <td>80/100問正解</td>
-                </tr>
-            </table>
-            </div>
-            <button id="ranking-reload-button" style="margin-top:10px">
-              ランキング更新
-            </button>
           </div>
         </div>
         <!-- -->
