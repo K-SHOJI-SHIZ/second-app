@@ -6,6 +6,7 @@ function gameStart(){
     socket.emit('game-start', {nickname: $("#nickname").val() });
     $("#start-screen").hide();
     $("#logout-screen").show();
+    $("#error-message").hide();
 }
 $("#start-button").on('click', ()=>{
     const playerName = $("#nickname").val();
@@ -19,27 +20,27 @@ function logOut(){
     mainOpen();
     $("#start-screen").show();
     $("#logout-screen").hide();
+    $("#error-message").hide();
 }
 $("#logout-button").on('click', logOut);
 
 function drawOpen(){
+    if (isPainter) {
+      $("#logout-screen").hide();
+      $("#draw-quit-menu").show();
+    }
     $("#draw-screen").show();
     $("#main-screen").hide();
+    $("#error-message").hide();
 }
 $("#draw-alone-button").on('click', ()=>{
-  isPainter = true;
-  $("#pallet").show();
-  drawOpen();
+  socket.emit('draw-start-request', 'alone');
 });
 $("#draw-relay-button").on('click', ()=>{
-  isPainter = true;
-  $("#pallet").show();
-  drawOpen();
+  socket.emit('draw-start-request', 'relay');
 });
 $("#draw-gether-button").on('click', ()=>{
-  isPainter = true;
-  $("#pallet").show();
-  drawOpen();
+  socket.emit('draw-start-request', 'gether');
 });
 $("#join-button").on('click', ()=>{
   $("#pallet").hide();
@@ -50,15 +51,34 @@ $("#join-button").on('click', ()=>{
 function mainOpen(){
     $("#draw-screen").hide();
     $("#main-screen").show();
+    $("#error-message").hide();
+    $("#logout-screen").show();
 }
-$("#quit-button").on('click', ()=>{
-  isPainter=false;
+$("#menu-button").on('click', ()=>{
   mainOpen();
+});
+$("#draw-quit-button").on('click', ()=>{
+  socket.emit('draw-quit-request');
 });
 
 function readCanvas(){
   socket.emit('requestCurrentCanvas');
 }
+
+socket.on("draw-start-response", (isStart)=>{
+  if (isStart){
+    isPainter = true;
+    $("#pallet").show();
+    drawOpen();
+  } else {
+    $("#error-message").show();
+  }
+});
+socket.on("draw-quit-response", ()=>{
+  isPainter=false;
+  $("#draw-quit-menu").hide();
+  mainOpen();
+});
 
 window.addEventListener('load', () => {
   const canvas = document.querySelector('#draw-area');

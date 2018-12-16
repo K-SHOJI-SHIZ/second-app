@@ -9,6 +9,8 @@ const server = http.Server(app);
 const io = socketIO(server);
 let players = [];
 let drawData = [];
+let currentMode = 'wait';
+let cntPainter = 0;
 
 class Player {
     constructor(obj={}){
@@ -17,7 +19,7 @@ class Player {
         this.nickname = obj.nickname;
         this.nextQuestionNo = obj.nextQuestionNo;
         this.score = obj.score;
-        this.isWriter = false;
+        this.isPainter = false;
     }
     remove(){
         delete players[this.id];
@@ -37,6 +39,42 @@ io.on('connection', function(socket) {
         });
         players.push(player);
     });
+    socket.on('draw-start-request', function(mode) {
+      let isStart = false;
+      if (cntPainter === 0) {
+        drawData=[];
+        io.sockets.emit("receiveDrawData", {act: "clear"});
+      }
+      switch(mode){
+          case "alone":
+          case "relay":
+          if (currentMode === 'wait') {
+            isStart = true;
+            currentMode = mode;
+            cntPainter = cntPainter + 1;
+            player.isPainter=true;
+          }
+          break;
+        case "gether":
+          if (currentMode === 'wait' || currentMode === 'gether') {
+            isStart = true;
+            currentMode = mode;
+            cntPainter = cntPainter + 1;
+            player.isPainter=true;
+          }
+          break;
+        default:
+      }
+      socket.emit("draw-start-response",isStart);
+    });
+    socket.on('draw-quit-request', ()=>{
+      cntPainter = cntPainter-1;
+      player.isPainter=false;
+      if (cntPainter === 0) {
+        currentMode = 'wait';
+      }
+      socket.emit("draw-quit-response");
+    });
     socket.on('draw', function(data) {
       drawData.push(data);
       if(data.act == "clear") {
@@ -53,6 +91,13 @@ io.on('connection', function(socket) {
     });
     socket.on('disconnect', () => {
         if(!player){return;}
+        if(player.isPainter) {
+          cntPainter = cntPainter-1;
+          player.isPainter=false;
+          if (cntPainter === 0) {
+            currentMode = 'wait';
+          }
+        }
         delete players[player.id];
         player = null;
     });
