@@ -11,6 +11,7 @@ let players = [];
 let drawData = [];
 let currentMode = 'wait';
 let cntPainter = 0;
+let drawer = '';
 
 class Player {
     constructor(obj={}){
@@ -26,6 +27,24 @@ class Player {
     }
 }
 
+function getDrawerData(){
+  const data = {
+    mode: currentMode,
+    drawer: ''
+  }
+  switch(currentMode){
+    case "wait":
+      break;
+    case "alone":
+      data.drawer = drawer;
+      break;
+    case "gether":
+      break;
+    default:
+  }
+  return data;
+}
+
 io.on('connection', function(socket) {
     let player = null;
     socket.on('game-start', (config) => {
@@ -38,6 +57,10 @@ io.on('connection', function(socket) {
             score: 0,
         });
         players.push(player);
+    });
+    socket.on('drawer-name-request', () => {
+      const data = getDrawerData();
+      socket.emit("drawer-name-response", data);
     });
     socket.on('draw-start-request', function(mode) {
       let isStart = false;
@@ -53,6 +76,7 @@ io.on('connection', function(socket) {
             currentMode = mode;
             cntPainter = cntPainter + 1;
             player.isPainter=true;
+            drawer = player.nickname;
           }
           break;
         case "gether":
@@ -64,6 +88,10 @@ io.on('connection', function(socket) {
           }
           break;
         default:
+      }
+      if (isStart){
+        const data = getDrawerData();
+        socket.broadcast.emit("drawer-name-response", data);
       }
       socket.emit("draw-start-response",isStart);
     });

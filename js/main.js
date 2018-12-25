@@ -18,6 +18,7 @@ function logOut(){
 }
 
 function drawOpen(){
+    socket.emit('drawer-name-request');
     if (isPainter) {
       $("#logout-screen").hide();
       $("#draw-quit-menu").show();
@@ -70,6 +71,24 @@ $("#menu-button").on('click', ()=>{
 });
 $("#draw-quit-button").on('click', ()=>{
   socket.emit('draw-quit-request');
+});
+
+socket.on("drawer-name-response", (data)=>{
+  const element = document.getElementById("drawer-name");
+  let message = '';
+  switch(data.mode){
+    case "alone":
+      message = `${data.drawer}さんが描いています`;
+      break;
+    case "wait":
+      message = "まだゲームは始まっていません";
+      break;
+    case "gether":
+    　message = "みんなで描いています";
+      break;
+    default:
+  }
+  element.innerHTML=message;
 });
 
 socket.on("draw-start-response", (isStart)=>{
