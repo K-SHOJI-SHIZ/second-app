@@ -8,13 +8,13 @@
   <link rel="stylesheet" href="css/colorjoe.css">
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <title>忘年会☆ゲーム</title>
+  <title>お絵描きゲーム</title>
 </head>
 <body>
   <div style="background: url(img/gackground.jpg)">
     <div id= "body" style="width: 375px; height:-webkit-fill-available; background-color: #fff; margin: 0 auto; padding: 0 1em;">
       <div id="menu" style="display: flex;">
-        <div>忘年会☆ゲーム</div>
+        <div>お絵描きゲーム</div>
         <div
             id="logout-screen"
             style="text-align: right; font-size: medium; display: none;"
@@ -48,7 +48,6 @@
           <h2>描き手メニュー</h2>
             <div>
               <div><button style="font-size: xx-large;" id="draw-alone-button">一人で描く</button></div>
-              <div><button style="font-size: xx-large;" id="draw-relay-button">リレー形式で描く</button></div>
               <div><button style="font-size: xx-large;" id="draw-gether-button">みんなで描く</button></div>
             </div>
           </div>
@@ -60,6 +59,7 @@
         <!-- お絵描き画面 -->
         <div id="draw-screen" style="display:none">
           <h1>お絵描き</h1>
+          <div id="drawer-name">○○さんが書いています</div>
           <div>
               <canvas
                 id="draw-area"
