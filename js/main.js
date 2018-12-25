@@ -8,12 +8,6 @@ function gameStart(){
     $("#logout-screen").show();
     $("#error-message").hide();
 }
-$("#start-button").on('click', ()=>{
-    const playerName = $("#nickname").val();
-    if (playerName) {
-        gameStart();
-    }
-});
 
 function logOut(){
     // socket.emit('logout');
@@ -22,7 +16,6 @@ function logOut(){
     $("#logout-screen").hide();
     $("#error-message").hide();
 }
-$("#logout-button").on('click', logOut);
 
 function drawOpen(){
     if (isPainter) {
@@ -33,20 +26,6 @@ function drawOpen(){
     $("#main-screen").hide();
     $("#error-message").hide();
 }
-$("#draw-alone-button").on('click', ()=>{
-  socket.emit('draw-start-request', 'alone');
-});
-$("#draw-relay-button").on('click', ()=>{
-  socket.emit('draw-start-request', 'relay');
-});
-$("#draw-gether-button").on('click', ()=>{
-  socket.emit('draw-start-request', 'gether');
-});
-$("#join-button").on('click', ()=>{
-  $("#pallet").hide();
-  readCanvas();
-  drawOpen();
-});
 
 function mainOpen(){
     $("#draw-screen").hide();
@@ -54,16 +33,44 @@ function mainOpen(){
     $("#error-message").hide();
     $("#logout-screen").show();
 }
+
+function readCanvas(){
+  socket.emit('requestCurrentCanvas');
+}
+
+$("#start-button").on('click', ()=>{
+    const playerName = $("#nickname").val();
+    if (playerName) {
+        gameStart();
+    }
+});
+
+$("#logout-button").on('click', logOut);
+
+$("#draw-alone-button").on('click', ()=>{
+  socket.emit('draw-start-request', 'alone');
+});
+
+$("#draw-relay-button").on('click', ()=>{
+  socket.emit('draw-start-request', 'relay');
+});
+
+$("#draw-gether-button").on('click', ()=>{
+  socket.emit('draw-start-request', 'gether');
+});
+
+$("#join-button").on('click', ()=>{
+  $("#pallet").hide();
+  readCanvas();
+  drawOpen();
+});
+
 $("#menu-button").on('click', ()=>{
   mainOpen();
 });
 $("#draw-quit-button").on('click', ()=>{
   socket.emit('draw-quit-request');
 });
-
-function readCanvas(){
-  socket.emit('requestCurrentCanvas');
-}
 
 socket.on("draw-start-response", (isStart)=>{
   if (isStart){
@@ -74,6 +81,7 @@ socket.on("draw-start-response", (isStart)=>{
     $("#error-message").show();
   }
 });
+
 socket.on("draw-quit-response", ()=>{
   isPainter=false;
   $("#draw-quit-menu").hide();
@@ -191,6 +199,13 @@ window.addEventListener('load', () => {
     });
   }
 
+  function initColorPalette() {
+    const joe = colorjoe.rgb('color-palette', currentColor);
+    joe.on('done', color => {
+      currentColor = color.hex();
+    });
+  }
+
   socket.on('receiveCurrentCanvas', (drawData)=>{
     drawData.forEach((data)=>{
       draw(data);
@@ -200,13 +215,6 @@ window.addEventListener('load', () => {
   socket.on('receiveDrawData', function(data) {
     draw(data);
   });
-
-  function initColorPalette() {
-    const joe = colorjoe.rgb('color-palette', currentColor);
-    joe.on('done', color => {
-      currentColor = color.hex();
-    });
-  }
 
   initEventHandler();
 
